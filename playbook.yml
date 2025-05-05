@@ -1,26 +1,28 @@
 ---
 - hosts: all
-  become: no
+  become: yes
   tasks:
   - name: Get current time
     ansible.builtin.command: date +"%Y-%m-%d %H:%M:%S"
     register: current_time
     changed_when: false
+    become: no
     
   - name: Write current time
     ansible.builtin.copy:
       content: "{{ current_time.stdout }}\n"
       dest: "~/time"
       mode: '0644'
+    become: no
       
   - name: Write username
     ansible.builtin.copy:
       content: "{{ ansible_user_id }}\n"
       dest: "~/username"
       mode: '0644'
+    become: no
       
   - name: Install unzip
     apt:
       name: "unzip={{ unzip_version }}"
       state: present
-    become: yes
