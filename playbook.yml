@@ -186,3 +186,10 @@
         - url: "https://github.com/shallvhack/Flight-Tracker.git"
           dest: "{{ dir }}/Flight-Tracker"
         
+  - name: Task 9
+    block:
+      - name: Restart Docker daemon
+        ansible.builtin.systemd:
+          name: docker
+          state: restarted
+    become: yes
