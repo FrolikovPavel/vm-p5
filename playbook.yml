@@ -65,9 +65,52 @@
 
   - name: Task 4
     block:
-     - name: Uncomment Ctrl+Z - Undo binding in /etc/nanorc
-       replace:
-         path: /etc/nanorc
-         regexp: '^#bind \^Z undo main'
-         replace: 'bind ^Z undo main'
+      - name: Uncomment Ctrl+Z - Undo binding in /etc/nanorc
+        replace:
+          path: /etc/nanorc
+          regexp: '^#bind \^Z undo main'
+          replace: 'bind ^Z undo main'
     become: yes
+    
+  - name: Task 5
+    block:
+      - name: Install Nginx
+        apt:
+          name: nginx
+          state: latest
+          update_cache: yes
+      
+      - name: Create backup directory
+        file:
+          path: "{{ backup_dir }}"
+          state: directory
+          mode: '0755'
+          
+      - name: Backup current nginx.conf
+        command: "cp {{ conf_path }} {{ backup_dir }}/nginx.conf.bak_{{ ansible_date_time.iso8601 }}"
+        args:
+          creates: "{{ backup_dir }}/nginx.conf.bak_{{ ansible_date_time.iso8601 }}"
+        register: backup_result
+        changed_when: backup_result.rc == 0          
+          
+      - name: Apply new nginx configuration from template
+        template:
+          src: "nginx.conf.j2"
+          dest: "{{ conf_path }}"
+          mode: '0644'
+          backup: no
+       
+      - name: Restart Nginx
+        service:
+          name: nginx
+          state: restarted
+       
+    become: yes
+    vars:
+      backup_dir: "/etc/nginx/backups"
+      conf_path: "/etc/nginx/nginx.conf"
+      server_name: "localhost"
+      nginx_port: 8080
+      worker_processes: "auto"
+      worker_connections: 1024
+    

@@ -1,0 +1,28 @@
+user www-data;
+worker_processes {{ worker_processes }};
+pid /run/nginx.pid;
+
+events {
+    worker_connections {{ worker_connections }};
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    server {
+        listen {{ nginx_port }};
+        server_name {{ server_name }};
+        
+        location / {
+            root /var/www/html;
+            index index.nginx-debian.html;
+        }
+    }
+}
