@@ -178,7 +178,7 @@
       dir: "~/repos"
       repos:
         - url: "https://github.com/kaifcodec/ytconverter.git"
-          dest: "{{ dir }}/ytconverter.git"
+          dest: "{{ dir }}/ytconverter"
         
         - url: "https://github.com/PKHarsimran/website-downloader.git"
           dest: "{{ dir }}/website-downloader"
