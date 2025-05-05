@@ -62,3 +62,12 @@
           state: latest
           update_cache: yes
     become: yes
+
+  - name: Task 4
+    block:
+     - name: Uncomment Ctrl+Z - Undo binding in /etc/nanorc
+       replace:
+         path: /etc/nanorc
+         regexp: '^#bind \^Z undo main'
+         replace: 'bind ^Z undo main'
+    become: yes
