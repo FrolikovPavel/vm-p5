@@ -115,7 +115,7 @@
       
   - name: Task 6
     block:
-      - name: Check if file alreade exists
+      - name: Check if file already exists
         stat:
           path: "~/{{ filename }}"
         register: file_stat
@@ -137,4 +137,18 @@
       filename: "vagrant_2.4.5_SHA256SUMS"
       max_retries: 3
       retry_delay: 10
+      
+  - name: Task 7
+    block:
+      - name: Create empty cron log file if not exists
+        file:
+          path: ~/cron
+          state: touch
+          mode: '0644'
     
+      - name: Cron-task
+        cron:
+          name: "Log cron execution time"
+          minute: "*/1"
+          job: 'echo "Cron-task executed at $(date)" >> ~/cron'
+          state: present
