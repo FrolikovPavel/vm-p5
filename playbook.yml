@@ -103,8 +103,7 @@
       - name: Restart Nginx
         service:
           name: nginx
-          state: restarted
-       
+          state: restarted      
     become: yes
     vars:
       backup_dir: "/etc/nginx/backups"
@@ -113,4 +112,29 @@
       nginx_port: 8080
       worker_processes: "auto"
       worker_connections: 1024
+      
+  - name: Task 6
+    block:
+      - name: Check if file alreade exists
+        stat:
+          path: "~/{{ filename }}"
+        register: file_stat
+        changed_when: false
+    
+      - name: Download file from Internet
+        get_url:
+          url: "https://releases.hashicorp.com/vagrant/2.4.5/{{ filename }}"
+          dest: "~/{{ filename }}"
+          mode: '0644'
+          timeout: 30
+        register: download_result
+        until: download_result is succeeded or file_stat.stat.exists
+        retries: "{{ max_retries }}"
+        delay: "{{ retry_delay }}"
+        when: not file_stat.stat.exists
+        ignore_errors: yes
+    vars:
+      filename: "vagrant_2.4.5_SHA256SUMS"
+      max_retries: 3
+      retry_delay: 10
     
